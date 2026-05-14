@@ -13,15 +13,24 @@ $(function()
 	});
 	$('#category').change(function()
 	{
+		$('#item_id').val('');
 		$('#itemname').val('');
+		
 	});
 	$('#itemname').change(function()
 	{	
 		var valvas = $("#items option:selected").text();
 		var mode = 'getiteminfo';
 		
-		var itemname = $('#itemname').val();
-		if(itemname == '')
+		let input = $(this).val();
+
+		let option = $('#items option').filter(function () {
+			return this.value === input;
+		});
+
+		let item_id = option.data('id') || '';
+		
+		if(item_id == '')
 		{ 
 			$('#itemid').val(''); 
 			$('.btnnew,.btnupdate').prop('disabled', true); 
@@ -29,7 +38,7 @@ $(function()
 		} else { 
 			$('.btnnew,.btnupdate').prop('disabled', false); 
 		} 
-		$.post("./actions/actions.php", { mode: mode, itemname: itemname },
+		$.post("./actions/actions.php", { mode: mode, item_id: item_id },
 		function(data) {
 			$('.results').html(data);
 			calculate();
@@ -40,9 +49,9 @@ function GetItems()
 {
 	var mode = 'getitems';
 	var category = $('#category').val();
-	var itemname = $('#itemname').val();
+	var item_id = $('#item_id').val();
 	
-	$.post("./actions/actions.php", { mode: mode, category: category, itemname: itemname },
+	$.post("./actions/actions.php", { mode: mode, category: category, item_id: item_id },
 	function(data) {
 		rms_reloaderOff();
 		$('#items').html(data);

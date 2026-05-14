@@ -10,6 +10,9 @@ define('DB_HOST', $dbhost);
 define('DB_USER', $dbuser);
 define('DB_PASSWORD', $dbpass);
 define('DB_NAME', $dbname);
+define('CENTRALIZED_DB_NAME', $centralizedbname);
+
+
 require 'class/dropdowns.class.php';
 require 'class/encrypted_password_class.php';
 require 'class/functions.class.php';

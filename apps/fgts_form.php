@@ -1,6 +1,8 @@
 <?php
 include '../init.php';
 $db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+$centralizedDB = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, CENTRALIZED_DB_NAME);
+
 $functions = new TheFunctions;
 $dropdown = new DropDowns;
 $branch = $functions->AppBranch();
@@ -107,12 +109,12 @@ if($transmode == 'new')
 		<td style="width:10px;"></td>
 		<td>
 			<select id="category" class="form-control"onchange="set_session(this.value,'session_category')">
-				<?php echo $dropdown->ItemCategory($category); ?>
+				<?php echo $dropdown->ItemCategory($centralizedDB, $category); ?>
 			</select>
 		</td>
 		<td style="width:10px;"></td>
 		<td>
-			<input list="items" id="itemname" class="form-control" placeholder="Select Items" autocomplete="no" onkeyup="GetItems()" value="<?php echo $item_name; ?>">
+			<input list="items" id="itemname" class="form-control" placeholder="Select Items" autocomplete="off" onkeyup="GetItems()" value="<?php echo $item_name; ?>">
 			<datalist id="items"></datalist>
 		</td>
 		<td style="width:10px;"></td>

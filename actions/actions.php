@@ -6501,28 +6501,33 @@ if($mode == 'changethemes')
 }
 if($mode == 'getiteminfo')
 {
-	$itemname = $_POST['itemname'];
-	$query ="SELECT id,product_name,unit_price,unit_price_new,effectivity_date,yield_per_kilo FROM store_items WHERE product_name='$itemname'";  
+	$item_id = $_POST['item_id'];
+	
+	$query ="SELECT s.item_id,item_name,price,effectivity_date,yield_per_batch
+			FROM applicationcentralized_data.items as  s join applicationcentralized_data.item_prices as i on i.item_id =  s.item_id
+			WHERE s.item_id='$item_id'";  
+	
 	$result = mysqli_query($db, $query); 
+	
 	if ($result->num_rows > 0) {
 		while($ROWS = mysqli_fetch_array($result))  
 		{
-			$rowid = $ROWS['id'];
-			$actual_yield = $ROWS['yield_per_kilo'];
-			$standard_yield = $ROWS['yield_per_kilo'];
-			$unit_price = $ROWS['unit_price'];
-			$unit_price_new = $ROWS['unit_price_new'];
+			$rowid = $ROWS['item_id'];
+			$actual_yield = $ROWS['yield_per_batch'];
+			$standard_yield = $ROWS['yield_per_batch'];
+			$unit_price = $ROWS['price'];
 			$effectivity_date = $ROWS['effectivity_date'];
 			$session_date = $_SESSION['session_date'];		
 			$functions = new TheFunctions;
 			
 			if($session_date >= $effectivity_date)
 			{
-				$functions->validateDateWithFormat($effectivity_date) ? $unit_price = $ROWS['unit_price_new']:$unit_price = $ROWS['unit_price'];
+				$unit_price = 0;
 			}
 			else{
 				$unit_price = $ROWS['unit_price'];
 			}
+			
 			print_r('
 				<script>
 					$("#itemid").val("'.$rowid.'");
@@ -6537,26 +6542,43 @@ if($mode == 'getiteminfo')
 		echo $db->error;
 	}
 }
-if($mode == 'getitems')
+
+if ($mode == 'getitems')
 {
-	$category = $_POST['category']; 
-	$itemname = $_POST['itemname'];
-	$branch = $functions->AppBranch();
-	
-	$branchLocation = $functions->branchCheckingIfVisayasArea($branch,$db);
-	
-	$query ="SELECT * FROM store_items WHERE (location='$branchLocation' OR location='GENERAL' OR location='' OR location IS NULL) AND (branch_only='$branch' OR branch_only='' OR branch_only IS NULL) AND category_name='$category' AND status='ACTIVE' AND product_name LIKE '%$itemname%' ORDER BY product_name ASC LIMIT 50";  
-	$result = mysqli_query($db, $query); 
-	 if ($result->num_rows > 0)
-	 {
-		while($ROWS = mysqli_fetch_array($result))  
-		{
-			$item = $ROWS['product_name'];		
-			echo'<option value="'.$item.'".>';
-		}
-	}
-	else
-	{
-		echo $db->error;
-	}
+    $category = $_POST['category'] ?? 0;
+    $itemname = $_POST['itemname'] ?? '';
+
+    $branch = $functions->AppBranch();
+    $branchLocation = $functions->branchCheckingIfVisayasArea($branch, $db);
+
+    $category = (int)$category;
+    $itemname = mysqli_real_escape_string($db, $itemname);
+
+    $query = "
+        SELECT * FROM applicationcentralized_data.items
+        WHERE (location='$branchLocation' OR location='GENERAL' OR location='' OR location IS NULL)
+        AND is_active=1
+		AND category_id=$category
+        AND item_name LIKE '%$itemname%'
+        ORDER BY item_name ASC
+        LIMIT 50
+    ";
+
+    $result = mysqli_query($db, $query);
+
+    if ($result && $result->num_rows > 0)
+    {
+        while ($row = mysqli_fetch_assoc($result))
+        {
+            $item = htmlspecialchars($row['item_name']);
+            echo '<option 
+				value="'.$item.'" 
+				data-id="'.$row['item_id'].'">
+          	</option>';
+        }
+    }
+    else
+    {
+        echo $db->error;
+    }
 }

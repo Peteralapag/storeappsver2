@@ -187,6 +187,7 @@ class DropDowns
 			return '<option value="No Records">';
 		}
 	}
+	/*
 	public function ItemCategory($category)
 	{
 		$option = '<option value="">--- SELECT ---</option>';
@@ -213,7 +214,7 @@ class DropDowns
 				"MERCHANDISE OTHERS" => "MERCHANDISE OTHERS"
 			);
 		
-				
+		categories  (category_id and category_name)
 		foreach ( $includes as $key => $value )
 		{
 			$chosen = '';
@@ -224,6 +225,29 @@ class DropDowns
 			echo '<option '.$chosen.' value="'.$value.'">'.$key.'</option>';
 		}
 	}
+	*/
+
+	public function ItemCategory($centralizedDB, $category_id)
+	{
+		$option = '<option value="">--- SELECT ---</option>';
+
+		$sql = "SELECT category_id, category_name FROM categories where level = 2 ORDER BY category_name ASC";
+		$result = $centralizedDB->query($sql);
+
+		if ($result && $result->num_rows > 0) {
+			while ($row = $result->fetch_assoc()) {
+
+				$selected = ($row['category_id'] == $category_id) ? 'selected' : '';
+
+				$option .= '<option value="'.$row['category_id'].'" '.$selected.'>'
+						. htmlspecialchars($row['category_name'], ENT_QUOTES, 'UTF-8')
+						. '</option>';
+			}
+		}
+
+		return $option;
+	}
+
 	public function GetPerson($branch,$position,$people,$db)
 	{
 		if($position == 'baker' || $position == 'cashier'){
