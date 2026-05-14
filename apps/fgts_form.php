@@ -108,7 +108,9 @@ if($transmode == 'new')
 		<td><input id="time" type="time" class="form-control form-input" value="<?php echo $time; ?>"onchange="set_session(this.value,'session_time')"></td>
 		<td style="width:10px;"></td>
 		<td>
-			<select id="category" class="form-control"onchange="set_session(this.value,'session_category')">
+			<select id="category" class="form-control"onchange="set_session(this.value,'session_category');
+							$('#itemname').val('');
+        					$('#items').empty();">
 				<?php echo $dropdown->ItemCategory($centralizedDB, $category); ?>
 			</select>
 		</td>

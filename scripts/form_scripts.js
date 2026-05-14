@@ -13,7 +13,6 @@ $(function()
 	});
 	$('#category').change(function()
 	{
-		$('#item_id').val('');
 		$('#itemname').val('');
 		
 	});
@@ -29,7 +28,7 @@ $(function()
 		});
 
 		let item_id = option.data('id') || '';
-		
+
 		if(item_id == '')
 		{ 
 			$('#itemid').val(''); 
